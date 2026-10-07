@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Spectre"><meta name="theme-color" content="#000000">
+<title>Spectre – Portefeuille</title>
+<style>
+:root{--bg:#000;--card:#111;--tx:#fff;--mute:#9a9a9f;--acc:#ab9ff2;--up:#22e06b;--dn:#ff3b3b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#000;}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"SF Pro Display","Segoe UI",Roboto,sans-serif;overscroll-behavior:none}
+#app{max-width:480px;margin:0 auto;height:100%;position:relative;overflow:hidden}
+#scroll{height:100%;overflow-y:auto;padding:0 16px 120px;touch-action:pan-y}
+.tabs{display:flex;gap:8px;padding:12px 0;overflow-x:auto;scrollbar-width:none;align-items:center}
+.tabs::-webkit-scrollbar{display:none}
+.av{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 50% 80%,#f5f0a0 35%,#4cae7a 36%);flex:none}
+.tab{flex:none;padding:9px 16px;border-radius:20px;background:#121212;color:var(--mute);font-weight:600;font-size:15px;border:0}
+.tab.on{background:var(--acc);color:#1a1530}
+#ptr{height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.spin{width:24px;height:24px;border-radius:50%;border:3px solid #333;border-top-color:#ddd;opacity:0}
+.spin.go{animation:r .7s linear infinite}
+@keyframes r{to{transform:rotate(360deg)}}
+.acct{color:var(--mute);font-size:16px;font-weight:600;margin-top:14px}
+#bal{font-size:56px;font-weight:700;letter-spacing:-2px;margin:2px 0}
+.chg{display:flex;gap:8px;align-items:center;font-weight:600;font-size:16px}
+.pill{padding:2px 8px;border-radius:7px;color:#000;font-size:15px}
+.up{color:var(--up)}.dn{color:var(--dn)}
+.pill.up{background:var(--up);color:#00220d}.pill.dn{background:var(--dn);color:#fff}
+.card{background:var(--card);border-radius:22px;padding:14px 18px;margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+h2{font-size:22px;margin:26px 0 4px;font-weight:700}
+.row{display:flex;align-items:center;gap:14px}
+.ico{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:700;flex:none}
+.r{text-align:right}.sub{color:var(--mute);font-size:15px}
+.perps{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin-top:12px}
+.perps::-webkit-scrollbar{display:none}
+.pc{flex:none;width:150px;background:var(--card);border-radius:22px;padding:16px}
+.pc b{font-size:20px}.lev{background:#222;color:#bbb;border-radius:6px;padding:2px 7px;font-size:14px;margin-left:6px}
+.bar{position:absolute;left:0;right:0;bottom:0;padding:24px 16px calc(14px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;background:linear-gradient(transparent,#000 40%)}
+.search{flex:1;background:#151515;border-radius:30px;padding:16px 20px;color:#777;font-size:17px}
+.plus{width:56px;height:56px;border-radius:50%;background:var(--acc);color:#111;font-size:34px;border:0;line-height:1}
+#sh{position:fixed;inset:0;background:#000a;display:none;align-items:flex-end;z-index:9}
+#sh.on{display:flex}
+#sh>div{width:100%;max-width:480px;margin:0 auto;background:#161616;border-radius:26px 26px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px))}
+#sh label{display:block;color:var(--mute);font-size:13px;margin:12px 0 4px}
+#sh input[type=text]{width:100%;background:#000;border:1px solid #2a2a2a;border-radius:14px;color:#fff;font-size:18px;padding:13px}
+#sh .ok{width:100%;margin-top:18px;padding:15px;border:0;border-radius:16px;background:var(--acc);color:#1a1530;font-size:17px;font-weight:700}
+#sh .ck{display:flex;gap:10px;align-items:center;margin-top:14px;color:var(--mute);font-size:14px}
+</style></head><body>
+<div id="app"><div id="scroll">
+<div class="tabs"><div class="av"></div><button class="tab on">Accueil</button><button class="tab">Échange</button><button class="tab">Prédire</button><button class="tab">Explorer</button></div>
+<div id="ptr"><div class="spin" id="sp"></div></div>
+<div class="acct">Compte 1 ⌄</div>
+<div id="bal">$0</div>
+<div class="chg"><span id="d"></span><span class="pill" id="p"></span></div>
+<div class="card"><div class="row"><span style="opacity:.6">💵</span><b style="font-weight:600;font-size:18px">Espèces</b></div><span id="cash" style="font-size:18px"></span></div>
+<h2>Jetons ›</h2>
+<div class="card"><div class="row"><div class="ico" style="background:#0b0b14;color:#9945ff">S</div><div><b style="font-size:18px">Solana</b><div class="sub" id="solq"></div></div></div><div class="r"><div id="solv" style="font-size:18px"></div><div id="sold" style="font-size:16px"></div></div></div>
+<div class="card"><div class="row"><div class="ico" style="background:#fff;color:#222">◆</div><div><b style="font-size:18px">Ethereum</b><div class="sub">&lt; 0.00001 ETH</div></div></div><div class="r"><div style="font-size:18px">$0.00</div><div class="sub">$0.00</div></div></div>
+<h2>Perps ›</h2>
+<div class="perps" id="perps"></div>
+</div>
+<div class="bar"><div class="search">🔍&nbsp; Rechercher sur Spectre</div><button class="plus" onclick="addFunds()">+</button></div>
+</div>
+<div id="sh"><div>
+<b style="font-size:19px">Modifier les chiffres</b>
+<label>Solde total ($)</label><input type="text" inputmode="decimal" id="iT">
+<label>Variation du jour ($, négatif possible)</label><input type="text" inputmode="decimal" id="iD">
+<label>Espèces ($)</label><input type="text" inputmode="decimal" id="iC">
+<label>Prix du SOL ($)</label><input type="text" inputmode="decimal" id="iP">
+<div class="ck"><input type="checkbox" id="iR"><span>Variation aléatoire au rafraîchissement</span></div>
+<button class="ok" onclick="applyE()">Appliquer</button></div></div>
+<script>
+const $=id=>document.getElementById(id),f=(n,d=2)=>n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+let st={sol:594.31,px:105.9,cash:0,ref:0};st.ref=st.sol*st.px;
+const perps=[{s:'BTC',l:'40x',c:'#f7931a',v:-4.02},{s:'ETH',l:'25x',c:'#627eea',v:-5.97},{s:'HYPE',l:'10x',c:'#6ee7c8',v:-5.1},{s:'SOL',l:'20x',c:'#9945ff',v:-3.2}];
+function cls(v){return v>=0?'up':'dn'}
+function render(){
+ const tot=st.sol*st.px+st.cash,diff=tot-st.ref,pc=diff/st.ref*100,c=cls(diff),sg=diff>=0?'+':'-';
+ $('bal').textContent='$'+f(tot);
+ $('d').textContent=sg+'$'+f(Math.abs(diff));$('d').className=c;
+ $('p').textContent=sg+f(Math.abs(pc))+'%';$('p').className='pill '+c;
+ $('cash').textContent='$'+f(st.cash);
+ $('solq').textContent=f(st.sol,3)+' SOL';
+ $('solv').textContent='$'+f(st.sol*st.px);
+ $('sold').textContent=(diff>=0?'+ $':'− $')+f(Math.abs(diff));$('sold').className=c;
+ $('perps').innerHTML=perps.map(p=>`<div class="pc"><div class="ico" style="background:${p.c};color:#fff;width:48px;height:48px;font-size:22px">${p.s[0]}</div><div style="margin-top:22px"><b>${p.s}</b><span class="lev">${p.l}</span></div><div class="${cls(p.v)}" style="font-size:19px;margin-top:6px">${p.v>=0?'+':''}${f(p.v)}%</div></div>`).join('');
+}
+function refresh(){
+ if(rnd){st.px*=1+(Math.random()-.5)*.02;
+ perps.forEach(p=>p.v=+(p.v+(Math.random()-.5)*3).toFixed(2));}
+ render();
+}
+const sc=$('scroll'),ptr=$('ptr'),sp=$('sp');let y0=null,busy=false;
+function start(y){if(sc.scrollTop<=0&&!busy)y0=y}
+function move(y){if(y0===null)return;const d=Math.max(0,(y-y0)*.5);if(d>0){const h=Math.min(d,80);ptr.style.transition='none';ptr.style.height=h+'px';sp.style.opacity=h/60;sp.style.transform='rotate('+h*6+'deg)'}}
+function end(){if(y0===null)return;const h=parseFloat(ptr.style.height)||0;y0=null;ptr.style.transition='height .25s';
+ if(h>=60){busy=true;ptr.style.height='48px';sp.classList.add('go');sp.style.opacity=1;setTimeout(()=>{refresh();sp.classList.remove('go');ptr.style.height='0';sp.style.opacity=0;busy=false},1200)}else{ptr.style.height='0'}}
+sc.addEventListener('touchstart',e=>start(e.touches[0].clientY),{passive:true});
+sc.addEventListener('touchmove',e=>move(e.touches[0].clientY),{passive:true});
+sc.addEventListener('touchend',end);
+sc.addEventListener('mousedown',e=>start(e.clientY));
+window.addEventListener('mousemove',e=>move(e.clientY));
+window.addEventListener('mouseup',end);
+function addFunds(){st.cash+=100;render()}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelector('.tab.on').classList.remove('on');t.classList.add('on')});
+let rnd=false;
+const num=v=>parseFloat(String(v).replace(/[\s$]/g,'').replace(',','.'))||0;
+function openE(){const t=st.sol*st.px+st.cash;iT.value=t.toFixed(2);iD.value=(t-st.ref).toFixed(2);iC.value=st.cash.toFixed(2);iP.value=st.px.toFixed(2);iR.checked=rnd;sh.classList.add('on')}
+function applyE(){const t=num(iT.value),d=num(iD.value),c=num(iC.value),p=num(iP.value)||1;
+ st.px=p;st.cash=c;st.sol=Math.max(0,(t-c)/p);st.ref=(t-d)||1;rnd=iR.checked;sh.classList.remove('on');render()}
+sh.onclick=e=>{if(e.target===sh)sh.classList.remove('on')};
+['bal','d','p','cash','solv','solq'].forEach(i=>$(i).onclick=openE);
+document.querySelectorAll('.card').forEach(c=>c.onclick=openE);
+render();
+</script></body></html>
